@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroqNet", "GroqNet\GroqNet.csproj", "{1F939A9C-81EA-46AC-AD0E-27C2EA7FD441}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroqNet.Tests", "GroqNet.Tests\GroqNet.Tests.csproj", "{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroqNet.Example", "GroqNet.Example\GroqNet.Example.csproj", "{88ADFBA0-B622-4E31-AF60-181A72309C8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F939A9C-81EA-46AC-AD0E-27C2EA7FD441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F939A9C-81EA-46AC-AD0E-27C2EA7FD441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F939A9C-81EA-46AC-AD0E-27C2EA7FD441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F939A9C-81EA-46AC-AD0E-27C2EA7FD441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88ADFBA0-B622-4E31-AF60-181A72309C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88ADFBA0-B622-4E31-AF60-181A72309C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88ADFBA0-B622-4E31-AF60-181A72309C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88ADFBA0-B622-4E31-AF60-181A72309C8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2867BBEA-03F0-4039-9728-F20E61C34B82}
+	EndGlobalSection
+EndGlobal

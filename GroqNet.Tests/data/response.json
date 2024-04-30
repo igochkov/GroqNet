@@ -1,0 +1,29 @@
+{
+    "id": "34a9110d-c39d-423b-9ab9-9c748747b204",
+    "object": "chat.completion",
+    "created": 1708045122,
+    "model": "mixtral-8x7b-32768",
+    "system_fingerprint": "fp_dbffcd8265",
+    "choices": [
+        {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "Hello World"
+            },
+            "finish_reason": "stop",
+            "logprobs": null
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 24,
+        "completion_tokens": 377,
+        "total_tokens": 401,
+        "prompt_time": 0.009,
+        "completion_time": 0.774,
+        "total_time": 0.783
+    },
+    "x_groq": {
+        "id": "req_01htzpsmfmew5b4rbmbjy2kv74"
+    }
+}

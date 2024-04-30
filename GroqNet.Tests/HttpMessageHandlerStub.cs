@@ -1,0 +1,38 @@
+﻿using System.Net.Http.Headers;
+using System.Net.Mime;
+using System.Text;
+
+namespace GroqNet.Tests
+{
+    internal sealed class HttpMessageHandlerStub : DelegatingHandler
+    {
+        public HttpRequestHeaders? RequestHeaders { get; private set; }
+
+        public HttpContentHeaders? ContentHeaders { get; private set; }
+
+        public byte[]? RequestContent { get; private set; }
+
+        public Uri? RequestUri { get; private set; }
+
+        public HttpMethod? Method { get; private set; }
+
+        public HttpResponseMessage ResponseToReturn { get; set; }
+
+        public HttpMessageHandlerStub()
+        {
+            this.ResponseToReturn = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            this.ResponseToReturn.Content = new StringContent("{}", Encoding.UTF8, MediaTypeNames.Application.Json);
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            this.Method = request.Method;
+            this.RequestUri = request.RequestUri;
+            this.RequestHeaders = request.Headers;
+            this.RequestContent = request.Content == null ? null : await request.Content.ReadAsByteArrayAsync(cancellationToken);
+            this.ContentHeaders = request.Content?.Headers;
+
+            return await Task.FromResult(this.ResponseToReturn);
+        }
+    }
+}
