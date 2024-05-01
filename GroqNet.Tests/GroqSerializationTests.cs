@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using GroqNet.ChatCompletions;
 using Xunit;
 
 namespace GroqNet.Tests
@@ -9,12 +10,16 @@ namespace GroqNet.Tests
         public async Task SerializeAsync_GroqRequest_ReturnsJsonString()
         {
             // Arrange
-            var request = new GroqCompletionsRequest
+            var request = new GroqChatCompletionsRequest
             {
                 Model = GroqModel.LLaMA3_8b,
                 Messages = new GroqMessage[]
                 {
-                    new(ChatRole.User,"Hello, how are you?", "Alice", "1")
+                    new("Hello, how are you?")
+                    {
+                        Name="Alice",
+                        Seed="1"
+                    }
                 },
                 Temperature = 0.5M,
                 TopP = 0.9M,
@@ -25,7 +30,7 @@ namespace GroqNet.Tests
 
             // Act
             using var jsonStream = new MemoryStream();
-            await JsonSerializer.SerializeAsync(jsonStream, request, GroqService.SerializerOptions);
+            await JsonSerializer.SerializeAsync(jsonStream, request, GroqClient.SerializerOptions);
 
             // Assert
             jsonStream.Position = 0;
@@ -53,7 +58,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var responseContent = File.ReadAllText("data/response.json");
-            var expected = new GroqCompletionsResult
+            var expected = new GroqChatCompletions
             {
                 Id = "34a9110d-c39d-423b-9ab9-9c748747b204",
                 Object = "chat.completion",
@@ -65,7 +70,7 @@ namespace GroqNet.Tests
                     new ()
                     {
                         Index = 0,
-                        Message = new GroqMessage(ChatRole.Assistant, "Hello World"),
+                        Message = new GroqMessage(GroqChatRole.Assistant, "Hello World"),
                         FinishReason = "stop"
                     }
                 },
@@ -78,7 +83,7 @@ namespace GroqNet.Tests
                     CompletionTime = 0.774M,
                     TotalTime = 0.783M
                 },
-                XGroq = new XGroq
+                XGroq = new GroqXGroq
                 {
                     Id = "req_01htzpsmfmew5b4rbmbjy2kv74"
                 }
@@ -90,7 +95,7 @@ namespace GroqNet.Tests
             stream.Write(responseContent);
             stream.Flush();
             jsonStream.Position = 0;
-            var actual = await JsonSerializer.DeserializeAsync<GroqCompletionsResult>(jsonStream, GroqService.SerializerOptions);
+            var actual = await JsonSerializer.DeserializeAsync<GroqChatCompletions>(jsonStream, GroqClient.SerializerOptions);
 
             // Assert
 
@@ -118,7 +123,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var responseContent = File.ReadAllText("data/response.json");
-            var expected = new GroqCompletionsResult
+            var expected = new GroqChatCompletions
             {
                 Id = "34a9110d-c39d-423b-9ab9-9c748747b204",
                 Object = "chat.completion",
@@ -130,7 +135,7 @@ namespace GroqNet.Tests
                     new ()
                     {
                         Index = 0,
-                        Message = new GroqMessage(ChatRole.Assistant,"Hello World"),
+                        Message = new GroqMessage(GroqChatRole.Assistant,"Hello World"),
                         FinishReason = "stop",
                         Logprobs = null
                     }
@@ -144,7 +149,7 @@ namespace GroqNet.Tests
                     CompletionTime = 0.774M,
                     TotalTime = 0.783M
                 },
-                XGroq = new XGroq
+                XGroq = new GroqXGroq
                 {
                     Id = "req_01htzpsmfmew5b4rbmbjy2kv74"
                 }
@@ -157,7 +162,7 @@ namespace GroqNet.Tests
             stream.Flush();
             jsonStream.Position = 0;
 
-            await foreach (var actual in JsonSerializer.DeserializeAsyncEnumerable<GroqCompletionsResult>(jsonStream, GroqService.SerializerOptions))
+            await foreach (var actual in JsonSerializer.DeserializeAsyncEnumerable<GroqChatCompletions>(jsonStream, GroqClient.SerializerOptions))
             {
                 // Assert
                 Assert.Equal(expected.Id, actual.Id);

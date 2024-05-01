@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroqNet", "GroqNet\GroqNet.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroqNet.Tests", "GroqNet.Tests\GroqNet.Tests.csproj", "{2C3FB65B-074B-45F7-9408-9D9C3A7AFACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroqNet.Example", "GroqNet.Example\GroqNet.Example.csproj", "{88ADFBA0-B622-4E31-AF60-181A72309C8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GroqNet.Example", "GroqNet.Example\GroqNet.Example.csproj", "{88ADFBA0-B622-4E31-AF60-181A72309C8F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75C073E0-91A4-4848-8C76-E597A75F0301}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

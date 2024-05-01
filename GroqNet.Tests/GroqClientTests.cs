@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GroqNet.ChatCompletions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Diagnostics;
@@ -17,11 +18,11 @@ namespace GroqNet.Tests
             var model = GroqModel.LLaMA3_8b;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
             // Act
             // Assert
-            Assert.Throws<ArgumentNullException>(() => new GroqService(apiKey, model, httpClient, logger.Object));
+            Assert.Throws<ArgumentNullException>(() => new GroqClient(apiKey, model, httpClient, logger.Object));
         }
 
         [Fact]
@@ -29,15 +30,15 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            string? model = null;
+            GroqModel model;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
 
             // Act
             // Assert
-            Assert.Throws<ArgumentNullException>(() => new GroqService(apiKey, model, httpClient, logger.Object));
+            Assert.Throws<ArgumentNullException>(() => new GroqClient(apiKey, model, httpClient, logger.Object));
         }
 
         [Fact]
@@ -47,10 +48,10 @@ namespace GroqNet.Tests
             var apiKey = "NOKEY";
             var model = GroqModel.LLaMA3_8b;
             HttpClient? httpClient = null;
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger.Object);
+            var client = new GroqClient(apiKey, model, httpClient, logger.Object);
 
             // Assert
             Assert.NotNull(client);
@@ -64,17 +65,17 @@ namespace GroqNet.Tests
             var model = GroqModel.LLaMA3_8b;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
-            ILogger<GroqService>? logger = null;
+            ILogger<GroqClient>? logger = null;
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger);
+            var client = new GroqClient(apiKey, model, httpClient, logger);
 
             // Assert
             Assert.NotNull(client);
         }
 
         [Fact]
-        public async Task GetChatCompletionAsync_NoConversation_Throws_ArgumentNullException()
+        public async Task GetChatCompletionsAsync_NoConversation_Throws_ArgumentNullException()
         {
             // Arrange
             var apiKey = "NOKEY";
@@ -82,38 +83,35 @@ namespace GroqNet.Tests
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
             var options = new Mock<GroqChatCompletionOptions>();
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
             IList<GroqMessage>? conversation = null;
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger.Object);
+            var client = new GroqClient(apiKey, model, httpClient, logger.Object);
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetChatCompletionAsync(conversation, options.Object));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.GetChatCompletionsAsync(conversation, options.Object));
         }
 
         [Fact]
-        public async Task GetChatCompletionAsync_ValidRequest_ReturnsGroqResponse()
+        public async Task GetChatCompletionsAsync_ValidRequest_ReturnsGroqResponse()
         {
             // Arrange
             var apiKey = "NOKEY";
             var model = GroqModel.LLaMA3_8b;
-            var conversation = new List<GroqMessage>
-            {
-                new GroqMessage(ChatRole.User, "Hello")
-            };
+            var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");
             var messageHandlerStub = new HttpMessageHandlerStub();
             messageHandlerStub.ResponseToReturn = new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent(fileContent) };
             var httpClient = new HttpClient(messageHandlerStub, false);
             var options = new Mock<GroqChatCompletionOptions>();
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger.Object);
-            var response = await client.GetChatCompletionAsync(conversation, options.Object);
+            var client = new GroqClient(apiKey, model, httpClient, logger.Object);
+            var response = await client.GetChatCompletionsAsync(conversation, options.Object);
 
             // Assert
             Assert.NotNull(response);
@@ -121,15 +119,12 @@ namespace GroqNet.Tests
         }
 
         [Fact]
-        public async Task GetChatCompletionAsync_TooManyRequests_RetriesAfterDelay()
+        public async Task GetChatCompletionsAsync_TooManyRequests_RetriesAfterDelay()
         {
             // Arrange
             var apiKey = "NOKEY";
             var model = GroqModel.LLaMA3_8b;
-            var conversation = new List<GroqMessage>
-            {
-                new GroqMessage(ChatRole.User, "Hello")
-            };
+            var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");
             var httpResponse1 = new HttpResponseMessage { StatusCode = HttpStatusCode.TooManyRequests, Content = new StringContent(fileContent) };
@@ -145,14 +140,14 @@ namespace GroqNet.Tests
                 .ReturnsAsync(httpResponse2);
             var httpClient = new HttpClient(messageHandlerMock.Object, false);
             var options = new Mock<GroqChatCompletionOptions>();
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
             var sw = new Stopwatch();
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger.Object);
+            var client = new GroqClient(apiKey, model, httpClient, logger.Object);
 
             sw.Start();
-            var response = await client.GetChatCompletionAsync(conversation, options.Object);
+            var response = await client.GetChatCompletionsAsync(conversation, options.Object);
             sw.Stop();
 
             // Assert
@@ -162,15 +157,12 @@ namespace GroqNet.Tests
         }
 
         [Fact]
-        public async Task GetChatCompletionAsync_LogsRateLimits()
+        public async Task GetChatCompletionsAsync_LogsRateLimits()
         {
             // Arrange
             var apiKey = "NOKEY";
             var model = GroqModel.LLaMA3_8b;
-            var conversation = new List<GroqMessage>
-            {
-                new GroqMessage(ChatRole.User, "Hello")
-            };
+            var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");
             var messageHandlerStub = new HttpMessageHandlerStub();
@@ -189,11 +181,11 @@ namespace GroqNet.Tests
 
             var httpClient = new HttpClient(messageHandlerStub, false);
             var options = new Mock<GroqChatCompletionOptions>();
-            var logger = new Mock<ILogger<GroqService>>();
+            var logger = new Mock<ILogger<GroqClient>>();
 
             // Act
-            var client = new GroqService(apiKey, model, httpClient, logger.Object);
-            var response = await client.GetChatCompletionAsync(conversation, options.Object);
+            var client = new GroqClient(apiKey, model, httpClient, logger.Object);
+            var response = await client.GetChatCompletionsAsync(conversation, options.Object);
 
             // Assert
             Assert.NotNull(response);

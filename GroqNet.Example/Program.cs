@@ -1,4 +1,5 @@
 ﻿using GroqNet;
+using GroqNet.ChatCompletions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -8,17 +9,17 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddHttpClient();
-        services.AddGroqService(apiKey, GroqModel.LLaMA3_8b);
+        services.AddGroqClient(apiKey, GroqModel.LLaMA3_8b);
     }).Build();
 
-var groqService = host.Services.GetRequiredService<GroqService>();
+var groqClient = host.Services.GetRequiredService<GroqClient>();
 
-var conversation = new List<GroqMessage> 
+var history = new GroqChatHistory
 {
-    new GroqMessage(ChatRole.User, "What is the capital of France?")
+    new("What is the capital of France?")
 };
 
-var result = await groqService.GetChatCompletionAsync(conversation);
+var result = await groqClient.GetChatCompletionsAsync(history);
 
 Console.WriteLine(result.Choices.First().Message.Content);
 Console.WriteLine($"Total tokens used: {result.Usage.TotalTokens}; Time to response: {result.Usage.TotalTime} sec.");

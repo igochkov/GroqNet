@@ -1,25 +1,26 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GroqNet.ChatCompletions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GroqNet
 {
     public static class GroqExtensions
     {
-        public static void AddGroqService(
+        public static void AddGroqClient(
             this IServiceCollection services,
             string apiKey,
-            string model,
+            GroqModel model,
             string? serviceId = null)
         {
             ArgumentNullException.ThrowIfNull(services);
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-            ArgumentException.ThrowIfNullOrWhiteSpace(model);
+            ArgumentNullException.ThrowIfNull(model);
 
-            Func<IServiceProvider, object?, GroqService> factory = (serviceProvider, _) =>
+            Func<IServiceProvider, object?, GroqClient> factory = (serviceProvider, _) =>
                 new(apiKey,
                     model,
                     serviceProvider?.GetService<HttpClient>(),
-                    serviceProvider?.GetService<ILogger<GroqService>>());
+                    serviceProvider?.GetService<ILogger<GroqClient>>());
 
             services.AddKeyedSingleton(serviceId, factory);
         }

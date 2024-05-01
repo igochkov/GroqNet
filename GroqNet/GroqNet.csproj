@@ -11,13 +11,21 @@
     <Description>A .NET Core client library for interacting with the Groq API, the quickest LLM inference method available. The library provides a simple and easy-to-use interface for accessing the Groq API, allowing developers to integrate the platform's capabilities into their applications.</Description>
     <PackageProjectUrl></PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/igochkov/groq.net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/igochkov/GroqNet</RepositoryUrl>
     <PackageTags>Groq .NET Core API Client Library</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="System.Memory.Data" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,5 +33,9 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Sse\" />
   </ItemGroup>
 </Project>
