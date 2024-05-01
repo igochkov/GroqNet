@@ -2,7 +2,7 @@
 
 [![NuGet version (GroqNet)](https://img.shields.io/nuget/v/GroqNet.svg?style=flat-square)](https://www.nuget.org/packages/GroqNet/)
 [![NuGet downloads (GroqNet)](https://img.shields.io/nuget/dt/GroqNet.svg?style=flat-square)](https://www.nuget.org/packages/GroqNet/)
-[![GitHub license](https://img.shields.io/github/license/igochkov/groq.net)](https://github.com/igochkov/GroqNet)
+[![GitHub license](https://img.shields.io/github/license/igochkov/GroqNet)](https://github.com/igochkov/GroqNet)
 
 The Groq .NET Core is a library for interacting with the Groq API, the quickest LLM inference method available yet. 
 
