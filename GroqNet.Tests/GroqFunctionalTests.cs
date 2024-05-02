@@ -7,11 +7,11 @@ namespace GroqNet.Tests
 {
     public class GroqFunctionalTests
     {
-        //[Fact]
+        [Fact]
         public async Task GetChatCompletionsAsync_NoApiKey()
         {
             // Arrange
-            var apiKey = "123";
+            var apiKey = "NOKEY";
 
             using var httpClient = new HttpClient();
             var logger = new Logger<GroqClient>(new LoggerFactory());
@@ -37,12 +37,12 @@ namespace GroqNet.Tests
             }
         }
 
-        //[Fact]
+        [Fact]
         public async Task GetChatCompletionsAsync_NonStreaming()
         {
             // Arrange
             var apiKey = Environment.GetEnvironmentVariable("API_Key_Groq", EnvironmentVariableTarget.User);
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Mixtral_8x7b;
             using var httpClient = new HttpClient();
             var logger = new Logger<GroqClient>(new LoggerFactory());
             var cancellationToken = new CancellationToken();

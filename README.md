@@ -13,42 +13,53 @@ The library provides a simple and easy-to-use interface for accessing the Groq A
 ## Features
 
 * Sends HTTP requests to the Groq API
+* Streaming chat completions
 * Handles rate limiting and retries when necessary
 * Supports JSON serialization and deserialization using System.Text.Json
 * Can be used with ILogger for logging
-
-## Installation
-
-To install the Groq .NET Core Client Library, simply run the following command in your .NET Core project:
-
-```
-dotnet add package GroqNet
-```
 
 ## Usage
 
 Here's an example of how to use the client library:
 
 ```csharp
+using GroqNet;
+using GroqNet.ChatCompletions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 var apiKey = Environment.GetEnvironmentVariable("API_Key_Groq", EnvironmentVariableTarget.User);
 
 var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddHttpClient();
-        services.AddGroqService(apiKey, GroqModel.LLaMA3_8b);
+        services.AddGroqClient(apiKey, GroqModel.LLaMA3_8b);
     }).Build();
 
-var groqService = host.Services.GetRequiredService<GroqService>();
+var groqClient = host.Services.GetRequiredService<GroqClient>();
 
-var conversation = new List<GroqMessage> 
+var history = new GroqChatHistory
 {
-    new GroqMessage(ChatRole.User, "What is the capital of France?")
+    new("What is the capital of France?")
 };
 
-var result = await groqService.GetChatCompletionAsync(conversation);
+// -- Example 1: Get chat completions without streaming
+var result = await groqClient.GetChatCompletionsAsync(history);
 
 Console.WriteLine(result.Choices.First().Message.Content);
+Console.WriteLine($"Total tokens used: {result.Usage.TotalTokens}; Time to response: {result.Usage.TotalTime} sec.");
+
+// -- Example 2: Get chat completions with streaming
+await foreach (var msg in groqClient.GetChatCompletionsStreamingAsync(history))
+{
+    Console.WriteLine(msg.Choices[0].Delta.Content);
+
+    if (msg?.XGroq?.Usage != null)
+    {
+        Console.WriteLine($"Total tokens used: {msg?.XGroq?.Usage.TotalTokens}; Time to response: {msg?.XGroq?.Usage.TotalTime} sec.");
+    }
+}
 ```
 
 ## License

@@ -97,7 +97,7 @@ public sealed class GroqClient
             Temperature = options.Temperature,
             TopP = options.TopP,
             Stop = options.Stop,
-            Stream = false,
+            Stream = true,
             ResponseFormat = options.ResponseFormat,
             Tools = options.Tools
         };
