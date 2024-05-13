@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using Xunit;
@@ -128,7 +129,7 @@ namespace GroqNet.Tests
 
             var fileContent = File.ReadAllText("data/response.json");
             var httpResponse1 = new HttpResponseMessage { StatusCode = HttpStatusCode.TooManyRequests, Content = new StringContent(fileContent) };
-            httpResponse1.Headers.Add("retry-after", "1");
+            httpResponse1.Headers.Add("retry-after", "2");
             var httpResponse2 = new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent(fileContent) };
             var messageHandlerMock = new Mock<HttpMessageHandler>();
             messageHandlerMock.Protected()
@@ -152,12 +153,12 @@ namespace GroqNet.Tests
 
             // Assert
             Assert.NotNull(response);
-            Assert.True(sw.ElapsedMilliseconds >= 1000);
+            Assert.True(sw.ElapsedMilliseconds >= 2000);
             Assert.Equal("Hello World", response.Choices[0].Message.Content);
         }
 
         [Fact]
-        public async Task GetChatCompletionsAsync_LogsRateLimits()
+        public async Task GetChatCompletionsAsync_RespectRateLimits()
         {
             // Arrange
             var apiKey = "NOKEY";
@@ -172,10 +173,12 @@ namespace GroqNet.Tests
                 Content = new StringContent(fileContent),
                 Headers =
                 {
-                    { "x-ratelimit-remaining-requests", "10" },
-                    { "x-ratelimit-remaining-tokens", "20" },
-                    { "x-ratelimit-reset-requests", "12:00:00" },
-                    { "x-ratelimit-reset-tokens", "1:00:00" }
+                    { "x-ratelimit-limit-requests", "14400" },
+                    { "x-ratelimit-limit-tokens", "18000" },
+                    { "x-ratelimit-remaining-requests", "14370" },
+                    { "x-ratelimit-remaining-tokens", "17997" },
+                    { "x-ratelimit-reset-requests", "1h2m59.56s" },
+                    { "x-ratelimit-reset-tokens", "7.66s" }
                 }
             };
 
@@ -189,13 +192,12 @@ namespace GroqNet.Tests
 
             // Assert
             Assert.NotNull(response);
-            logger.Verify(l => l.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Exactly(4));
-
+            Assert.Equal(14400, client.CurrentRateLimits.LimitRequests);
+            Assert.Equal(18000, client.CurrentRateLimits.LimitTokens);
+            Assert.Equal(14370, client.CurrentRateLimits.RemainingRequests);
+            Assert.Equal(17997, client.CurrentRateLimits.RemainingTokens);
+            Assert.Equal(new TimeSpan(0, 1, 2, 59, 560), client.CurrentRateLimits.ResetRequests);
+            Assert.Equal(new TimeSpan(0, 0, 0, 7, 660), client.CurrentRateLimits.ResetTokens);
         }
     }
 }
