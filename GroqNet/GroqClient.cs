@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -83,7 +84,7 @@ public sealed class GroqClient
     public async IAsyncEnumerable<StreamingUpdate> GetChatCompletionsStreamingAsync(
         IList<GroqMessage> messages,
         GroqChatCompletionOptions? options = null,
-        CancellationToken cancellationToken = default)
+        [EnumeratorCancellation()] CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(messages, nameof(messages));
 
@@ -105,8 +106,8 @@ public sealed class GroqClient
         var response = await GetResponseAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
         var stream = SseAsyncEnumerator<StreamingUpdate>.EnumerateFromSseStream(
-            content, 
-            e => JsonSerializer.Deserialize<StreamingUpdate>(e, SerializerOptions), 
+            content,
+            e => JsonSerializer.Deserialize<StreamingUpdate>(e, SerializerOptions),
             cancellationToken);
 
         await foreach (var item in stream)
