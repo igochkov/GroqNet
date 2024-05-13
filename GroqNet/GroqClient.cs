@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,6 +20,8 @@ public sealed class GroqClient
 
     private const string GroqApiVersion = "1";
     private const string GroqEndpoint = $"https://api.groq.com/openai/v{GroqApiVersion}/";
+
+    public GroqRateLimitInfo CurrentRateLimits { get; private set; }
 
     public static JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
     {
@@ -83,7 +86,7 @@ public sealed class GroqClient
     public async IAsyncEnumerable<StreamingUpdate> GetChatCompletionsStreamingAsync(
         IList<GroqMessage> messages,
         GroqChatCompletionOptions? options = null,
-        CancellationToken cancellationToken = default)
+        [EnumeratorCancellation()] CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(messages, nameof(messages));
 
@@ -105,8 +108,8 @@ public sealed class GroqClient
         var response = await GetResponseAsync(request, cancellationToken);
         var content = await response.Content.ReadAsStreamAsync(cancellationToken);
         var stream = SseAsyncEnumerator<StreamingUpdate>.EnumerateFromSseStream(
-            content, 
-            e => JsonSerializer.Deserialize<StreamingUpdate>(e, SerializerOptions), 
+            content,
+            e => JsonSerializer.Deserialize<StreamingUpdate>(e, SerializerOptions),
             cancellationToken);
 
         await foreach (var item in stream)
@@ -118,8 +121,6 @@ public sealed class GroqClient
     private async Task<HttpResponseMessage> GetResponseAsync(GroqChatCompletionsRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request, nameof(request));
-
-        int retryAfterSeconds = 0;
 
         try
         {
@@ -133,19 +134,18 @@ public sealed class GroqClient
                 throw new InvalidOperationException("The Groq response is null.");
             }
 
-            retryAfterSeconds = GetRetryAfterSeconds(response);
+            // Update rate limit info
+            CurrentRateLimits = GroqRateLimitInfo.FromHeaders(response.Headers);
+
             response.EnsureSuccessStatusCode();
-
-            LogRateLimits(response);
-
             return response;
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.TooManyRequests)
         {
-            logger?.LogError($"Rate limit reached, sleeping for {retryAfterSeconds} seconds.");
+            logger?.LogError($"Rate limit reached, sleeping for {CurrentRateLimits.RetryAfter} seconds.");
 
-            // Sleep for the number of seconds specified by the server
-            await Task.Delay(retryAfterSeconds * 1000, cancellationToken);
+            // Delay the number of seconds specified by the server
+            await Task.Delay(CurrentRateLimits.RetryAfter * 1000, cancellationToken);
 
             // Retry the request
             return await GetResponseAsync(request, cancellationToken);
@@ -153,46 +153,6 @@ public sealed class GroqClient
         catch (Exception ex)
         {
             throw new InvalidOperationException("Failed to retrieve Groq completions.", ex);
-        }
-    }
-
-    private int GetRetryAfterSeconds(HttpResponseMessage response)
-    {
-        if (response.StatusCode == HttpStatusCode.TooManyRequests)
-        {
-            if (response.Headers.TryGetValues("retry-after", out var retryAfterValues))
-            {
-                return int.Parse(retryAfterValues?.FirstOrDefault() ?? "0");
-            }
-        }
-
-        return 0;
-    }
-
-    private void LogRateLimits(HttpResponseMessage response)
-    {
-        if (response.Headers.TryGetValues("x-ratelimit-remaining-requests", out var remainingRequestsValues))
-        {
-            var remainingRequests = int.Parse(remainingRequestsValues?.FirstOrDefault() ?? "0");
-            logger?.LogInformation($"Rate limit for requests: {remainingRequests}/day remaining.");
-        }
-
-        if (response.Headers.TryGetValues("x-ratelimit-remaining-tokens", out var remainingTokensValues))
-        {
-            var remainingTokens = int.Parse(remainingTokensValues?.FirstOrDefault() ?? "0");
-            logger?.LogInformation($"Rate limit for tokens: {remainingTokens}/minute remaining.");
-        }
-
-        if (response.Headers.TryGetValues("x-ratelimit-reset-requests", out var resetRequestsValues))
-        {
-            var resetRequests = resetRequestsValues?.FirstOrDefault() ?? "0";
-            logger?.LogInformation($"Rate limit for requests resets in: {resetRequests}.");
-        }
-
-        if (response.Headers.TryGetValues("x-ratelimit-reset-tokens", out var resetTokensValues))
-        {
-            var resetTokens = resetTokensValues?.FirstOrDefault() ?? "0";
-            logger?.LogInformation($"Rate limit for tokens resets in: {resetTokens}.");
         }
     }
 }

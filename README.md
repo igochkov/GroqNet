@@ -1,4 +1,4 @@
-# Groq .NET Core Client Service
+# Groq .NET Core Client Library
 
 [![NuGet version (GroqNet)](https://img.shields.io/nuget/v/GroqNet.svg?style=flat-square)](https://www.nuget.org/packages/GroqNet/)
 [![NuGet downloads (GroqNet)](https://img.shields.io/nuget/dt/GroqNet.svg?style=flat-square)](https://www.nuget.org/packages/GroqNet/)
