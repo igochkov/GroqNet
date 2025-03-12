@@ -12,7 +12,7 @@ namespace GroqNet.Tests
             // Arrange
             var request = new GroqChatCompletionsRequest
             {
-                Model = GroqModel.LLaMA3_8b,
+                Model = GroqModel.Grok2_latest,
                 Messages = new GroqMessage[]
                 {
                     new("Hello, how are you?")
@@ -79,13 +79,6 @@ namespace GroqNet.Tests
                     PromptTokens = 24,
                     CompletionTokens = 377,
                     TotalTokens = 401,
-                    PromptTime = 0.009M,
-                    CompletionTime = 0.774M,
-                    TotalTime = 0.783M
-                },
-                XGroq = new GroqXGroq
-                {
-                    Id = "req_01htzpsmfmew5b4rbmbjy2kv74"
                 }
             };
 
@@ -113,9 +106,6 @@ namespace GroqNet.Tests
             Assert.Equal(expected.Usage.PromptTokens, actual.Usage.PromptTokens);
             Assert.Equal(expected.Usage.CompletionTokens, actual.Usage.CompletionTokens);
             Assert.Equal(expected.Usage.TotalTokens, actual.Usage.TotalTokens);
-            Assert.Equal(expected.Usage.PromptTime, actual.Usage.PromptTime);
-            Assert.Equal(expected.Usage.TotalTime, actual.Usage.TotalTime);
-            Assert.Equal(expected.XGroq.Id, actual.XGroq.Id);
         }
 
         [Fact]
@@ -145,13 +135,6 @@ namespace GroqNet.Tests
                     PromptTokens = 24,
                     CompletionTokens = 377,
                     TotalTokens = 401,
-                    PromptTime = 0.009M,
-                    CompletionTime = 0.774M,
-                    TotalTime = 0.783M
-                },
-                XGroq = new GroqXGroq
-                {
-                    Id = "req_01htzpsmfmew5b4rbmbjy2kv74"
                 }
             };
 
@@ -179,9 +162,6 @@ namespace GroqNet.Tests
                 Assert.Equal(expected.Usage.PromptTokens, actual.Usage.PromptTokens);
                 Assert.Equal(expected.Usage.CompletionTokens, actual.Usage.CompletionTokens);
                 Assert.Equal(expected.Usage.TotalTokens, actual.Usage.TotalTokens);
-                Assert.Equal(expected.Usage.PromptTime, actual.Usage.PromptTime);
-                Assert.Equal(expected.Usage.TotalTime, actual.Usage.TotalTime);
-                Assert.Equal(expected.XGroq.Id, actual.XGroq.Id);
             }
         }
     }

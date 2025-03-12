@@ -15,6 +15,4 @@ public class GroqChatCompletions
     public required IReadOnlyList<GroqChoice> Choices { get; set; }
 
     public required GroqUsage Usage { get; set; }
-
-    public required GroqXGroq XGroq { get; set; }
 }

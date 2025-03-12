@@ -12,14 +12,10 @@ namespace GroqNet.Serialization
 
             switch (model)
             {
-                case "llama3-8b-8192":
-                    return GroqModel.LLaMA3_8b;
-                case "llama3-70b-8192":
-                    return GroqModel.LLaMA3_70b;
-                case "mixtral-8x7b-32768":
-                    return GroqModel.Mixtral_8x7b;
-                case "gemma-7b-it":
-                    return GroqModel.Gemma_7b;
+                case "grok-2-latest":
+                    return GroqModel.Grok2_latest;
+                case "grok-2-vision-latest":
+                    return GroqModel.Grok2_vision_latest;
                 default:
                     throw new JsonException($"Unknown model: '{model}'");
             }
