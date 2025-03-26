@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using Xunit;
@@ -16,7 +15,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             string? apiKey = null;
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
             var logger = new Mock<ILogger<GroqClient>>();
@@ -47,7 +46,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             HttpClient? httpClient = null;
             var logger = new Mock<ILogger<GroqClient>>();
 
@@ -63,7 +62,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
             ILogger<GroqClient>? logger = null;
@@ -80,7 +79,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var messageHandlerStub = new HttpMessageHandlerStub();
             var httpClient = new HttpClient(messageHandlerStub, false);
             var options = new Mock<GroqChatCompletionOptions>();
@@ -100,7 +99,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");
@@ -124,7 +123,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");
@@ -162,7 +161,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = "NOKEY";
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var conversation = new GroqChatHistory { new("Hello") };
 
             var fileContent = File.ReadAllText("data/response.json");

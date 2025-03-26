@@ -17,7 +17,7 @@ namespace GroqNet.Tests
             var logger = new Logger<GroqClient>(new LoggerFactory());
             var cancellationToken = new CancellationToken();
             var options = new GroqChatCompletionOptions(1.0m, 100, 1.0m);
-            var model = GroqModel.LLaMA3_8b;
+            var model = GroqModel.Grok2_latest;
             var conversation = new GroqChatHistory
             {
                 new("What is the capital of France?")
@@ -42,7 +42,7 @@ namespace GroqNet.Tests
         {
             // Arrange
             var apiKey = Environment.GetEnvironmentVariable("API_Key_Groq", EnvironmentVariableTarget.User);
-            var model = GroqModel.Mixtral_8x7b;
+            var model = GroqModel.Grok2_latest;
             using var httpClient = new HttpClient();
             var logger = new Logger<GroqClient>(new LoggerFactory());
             var cancellationToken = new CancellationToken();

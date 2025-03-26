@@ -19,19 +19,4 @@ public class GroqUsage
     /// Total number of tokens involved in both the prompt and the completion
     /// </summary>
     public required int TotalTokens { get; set; }
-
-    /// <summary>
-    /// Time taken (in seconds) to process the prompt
-    /// </summary>
-    public required decimal PromptTime { get; set; }
-
-    /// <summary>
-    /// Time taken (in seconds) to generate the completion response
-    /// </summary>
-    public required decimal CompletionTime { get; set; }
-
-    /// <summary>
-    /// Total time (in seconds) taken from receiving the prompt to providing the completion
-    /// </summary>
-    public required decimal TotalTime { get; set; }
 }

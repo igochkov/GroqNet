@@ -19,7 +19,7 @@ public sealed class GroqClient
     private readonly GroqModel model;
 
     private const string GroqApiVersion = "1";
-    private const string GroqEndpoint = $"https://api.groq.com/openai/v{GroqApiVersion}/";
+    private const string GroqEndpoint = $"https://api.x.ai/v{GroqApiVersion}/";
 
     public GroqRateLimitInfo CurrentRateLimits { get; private set; }
 

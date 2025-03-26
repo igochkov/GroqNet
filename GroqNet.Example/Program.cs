@@ -9,7 +9,7 @@ var host = new HostBuilder()
     .ConfigureServices(services =>
     {
         services.AddHttpClient();
-        services.AddGroqClient(apiKey, GroqModel.LLaMA3_8b);
+        services.AddGroqClient(apiKey, GroqModel.Grok2_latest);
     }).Build();
 
 var groqClient = host.Services.GetRequiredService<GroqClient>();
@@ -23,7 +23,7 @@ var history = new GroqChatHistory
 var result = await groqClient.GetChatCompletionsAsync(history);
 
 Console.WriteLine(result.Choices.First().Message.Content);
-Console.WriteLine($"Total tokens used: {result.Usage.TotalTokens}; Time to response: {result.Usage.TotalTime} sec.");
+Console.WriteLine($"Total tokens used: {result.Usage.TotalTokens}");
 
 // -- Example 2: Get chat completions with streaming
 await foreach (var msg in groqClient.GetChatCompletionsStreamingAsync(history))
